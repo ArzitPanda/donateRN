@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { Avatar, Badge, Divider } from '@rneui/base';
-
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { Avatar, Badge, Divider, ListItem, color } from '@rneui/base';
 import colors from '../../Color';
 import { PieChart } from 'react-native-gifted-charts';
 
@@ -10,6 +9,8 @@ const ProfileScreen = () => {
     name: 'John Doe',
     email: 'johndoe@example.com',
     profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
+    phone: '+1 234 567 890',
+    address: '123 Main Street, City, State, Country',
     donations: [
       { type: 'Money', amount: 500 },
       { type: 'Food', amount: 20 },
@@ -23,14 +24,12 @@ const ProfileScreen = () => {
     y: amount,
   }));
 
-
   const pieData = [
-    {value: 54, color: colors.background, text: 'book'},
-    {value: 40, color: colors.primary, text: 'money'},
-    {value: 20, color: colors.secondary, text: 'blood'},
-    {value: 25, color: colors.text.secondary, text: 'blood'},
-];
-
+    { value: 54, color: colors.background, text: 'book' },
+    { value: 40, color: colors.primary, text: 'money' },
+    { value: 20, color: colors.secondary, text: 'blood' },
+    { value: 25, color: colors.text.secondary, text: 'blood' },
+  ];
 
   const totalDonations = userData.donations.reduce(
     (total, { amount }) => total + amount,
@@ -38,10 +37,10 @@ const ProfileScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Avatar
-          size="large"
+          size="xlarge"
           rounded
           source={{ uri: userData.profilePicture }}
           containerStyle={styles.avatar}
@@ -61,28 +60,49 @@ const ProfileScreen = () => {
       <View style={styles.donationChartContainer}>
         <Text style={styles.sectionTitle}>Donation Summary</Text>
         <PieChart
-            showText
-            textColor="black"
-            radius={150}
-            textSize={20}
-            showTextBackground
-            textBackgroundRadius={26}
-            data={pieData}
-            />
+          showText
+          textColor={colors.text.primary}
+          radius={60}
+          textSize={10}
+     
+        
+          data={pieData}
+        />
       </View>
 
       <View style={styles.detailsContainer}>
         <Text style={styles.sectionTitle}>Contact Details</Text>
-        <Text style={styles.detailText}>Email: {userData.email}</Text>
+        <ListItem bottomDivider containerStyle={{backgroundColor:colors.primary}}>
+          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/542/542689.png' }}  />
+          <ListItem.Content>
+            <ListItem.Title style={{color:colors.text.primary}}>{userData.email}</ListItem.Title>
+            <ListItem.Subtitle style={{color:colors.secondary}}>Email</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+        <Divider color={colors.text.secondary} />
+        <ListItem bottomDivider  containerStyle={{backgroundColor:colors.primary}} >
+          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/725/725611.png' }} />
+          <ListItem.Content>
+            <ListItem.Title style={{color:colors.text.primary}}>{userData.phone}</ListItem.Title>
+            <ListItem.Subtitle style={{color:colors.secondary}}>Phone</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+        <Divider color={colors.text.secondary} />
+        <ListItem bottomDivider containerStyle={{backgroundColor:colors.primary}}>
+          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/684/684908.png' }} />
+          <ListItem.Content>
+            <ListItem.Title style={{color:colors.text.primary}}>{userData.address}</ListItem.Title>
+            <ListItem.Subtitle style={{color:colors.secondary}}>Address</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginTop:50,
+  
     backgroundColor: colors.background,
     padding: 20,
   },
@@ -106,7 +126,6 @@ const styles = StyleSheet.create({
   badgeContainer: {
     backgroundColor: colors.secondary,
     paddingHorizontal: 10,
-
     borderRadius: 10,
   },
   badge: {
