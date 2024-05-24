@@ -4,7 +4,7 @@ import { Platform, ScrollView, StyleSheet, TouchableNativeFeedback, TouchableOpa
 import { BottomSheet, Icon, ListItem, Text } from '@rneui/base';
 import colors from '../../Color';
 import EventDetails from '../Components/EventDetails';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+
 import LogoSvg from '../../LogioSvg';
 
 export default function MapScreen() {

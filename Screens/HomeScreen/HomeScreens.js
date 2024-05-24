@@ -88,6 +88,7 @@ const Card = ({ title ,icon}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: Platform.select({web:'50%',default:'100%'}),
     backgroundColor: '#121212',
     padding: Platform.select({android:10,ios:10})
   },

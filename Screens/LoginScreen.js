@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ToastAndroid } from 'react-native';
 import { Input, Button } from '@rneui/base';
 import { useNavigation } from '@react-navigation/native';
 import LogoSvg from '../LogioSvg';
 import { KeyboardAvoidingView } from 'react-native';
+import supabase from '../config';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +12,7 @@ const LoginScreen = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation();
-  const handleLogin = () => {
+  const handleLogin =async () => {
     let isValid = true;
 
     // Email validation
@@ -34,10 +35,27 @@ const LoginScreen = () => {
       // Handle login logic here
       console.log('Email:', email);
       console.log('Password:', password);
+     const{ data,error }= await   supabase.auth.signInWithPassword({
+        email:email.trim(),
+        password:password.trim(),
+      })
+
+      if(data.user!=null)
+        {
+          supabase.auth.setSession(data.session);
+          navigation.navigate('Home')
+        }
+        
+        if(error)
+          {
+            ToastAndroid.show(error.message,2000)
+          }
+
+
     }
 
 
-    navigation.navigate('Home')
+  
   };
 
   return (

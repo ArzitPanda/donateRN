@@ -1,0 +1,29 @@
+[
+    {
+      "Id": 1,
+      "DonorId": 101,
+      "Category": 1,
+      "Title": "Clothes Donation",
+      "Description": "Used clothes in good condition",
+      "PhotoUrls": "http://example.com/photo1.jpg",
+      "Location": "City Center",
+      "Lattitude": 12.9715987,
+      "Longitude": 77.5945627,
+      "Timing": "2024-05-24T14:00:00Z",
+      "CreatedAt": "2024-05-24T12:00:00Z"
+    },
+    {
+      "Id": 2,
+      "DonorId": 102,
+      "Category": 2,
+      "Title": "Food Donation",
+      "Description": "Canned food and dry goods",
+      "PhotoUrls": "http://example.com/photo2.jpg",
+      "Location": "Community Hall",
+      "Lattitude": 12.2958104,
+      "Longitude": 76.6393805,
+      "Timing": "2024-05-25T10:00:00Z",
+      "CreatedAt": "2024-05-24T13:00:00Z"
+    }
+  ]
+  

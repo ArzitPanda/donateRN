@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Avatar, Badge, Divider, ListItem, color } from '@rneui/base';
 import colors from '../../Color';
-import { PieChart } from 'react-native-gifted-charts';
+
 
 const ProfileScreen = () => {
   const userData = {
@@ -45,56 +45,7 @@ const ProfileScreen = () => {
           source={{ uri: userData.profilePicture }}
           containerStyle={styles.avatar}
         />
-        <View style={styles.userInfo}>
-          <Text style={styles.name}>{userData.name}</Text>
-          <Badge
-            value={`Total Donations: ${totalDonations}`}
-            textStyle={styles.badge}
-            badgeStyle={styles.badgeContainer}
-          />
-        </View>
-      </View>
-
-      <Divider style={styles.divider} />
-
-      <View style={styles.donationChartContainer}>
-        <Text style={styles.sectionTitle}>Donation Summary</Text>
-        <PieChart
-          showText
-          textColor={colors.text.primary}
-          radius={60}
-          textSize={10}
-     
-        
-          data={pieData}
-        />
-      </View>
-
-      <View style={styles.detailsContainer}>
-        <Text style={styles.sectionTitle}>Contact Details</Text>
-        <ListItem bottomDivider containerStyle={{backgroundColor:colors.primary}}>
-          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/542/542689.png' }}  />
-          <ListItem.Content>
-            <ListItem.Title style={{color:colors.text.primary}}>{userData.email}</ListItem.Title>
-            <ListItem.Subtitle style={{color:colors.secondary}}>Email</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
-        <Divider color={colors.text.secondary} />
-        <ListItem bottomDivider  containerStyle={{backgroundColor:colors.primary}} >
-          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/725/725611.png' }} />
-          <ListItem.Content>
-            <ListItem.Title style={{color:colors.text.primary}}>{userData.phone}</ListItem.Title>
-            <ListItem.Subtitle style={{color:colors.secondary}}>Phone</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
-        <Divider color={colors.text.secondary} />
-        <ListItem bottomDivider containerStyle={{backgroundColor:colors.primary}}>
-          <Avatar source={{ uri: 'https://cdn-icons-png.flaticon.com/512/684/684908.png' }} />
-          <ListItem.Content>
-            <ListItem.Title style={{color:colors.text.primary}}>{userData.address}</ListItem.Title>
-            <ListItem.Subtitle style={{color:colors.secondary}}>Address</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
+      
       </View>
     </ScrollView>
   );

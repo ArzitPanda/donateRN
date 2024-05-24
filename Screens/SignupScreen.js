@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from 'react-native';
 import { Input, Button, Text } from '@rneui/base';
 import LottieView from 'lottie-react-native';
 import LogoSvg from '../LogioSvg';
 import { useNavigation } from '@react-navigation/native';
+import supabase from '../config';
 
 const SignupScreen = () => {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const SignupScreen = () => {
     const [passwordError, setPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
     const navigation = useNavigation();
-    const handleSignup = () => {
+    const handleSignup =async () => {
       let isValid = true;
   
       // Email validation
@@ -47,12 +48,29 @@ const SignupScreen = () => {
       }
   
       if (isValid) {
-        // Handle signup logic here
-        console.log('Email:', email);
-        console.log('Password:', password);
-        console.log('Confirm Password:', confirmPassword);
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+      
+         
+        })
+
+      console.log(data, error);
+        if(data.user!==null )
+          {
+            
+            navigation.navigate('Login')
+          }
+          else
+          {
+            ToastAndroid.show(error.message,2000)
+          }
+
+
+
       }
     };
+
 
 
   return (

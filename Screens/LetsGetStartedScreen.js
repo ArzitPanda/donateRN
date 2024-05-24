@@ -5,12 +5,21 @@ import axios from 'axios';
 import { Button } from '@rneui/base';
 import LogoSvg from '../LogioSvg';
 import { useNavigation } from '@react-navigation/native';
+import supabase from '../config';
 
 const LetsGetStartedScreen = () => {
     const navigation = useNavigation();
   const [randomAstronautImage, setRandomAstronautImage] = useState(null);
 
   useEffect(() => {
+
+      if(supabase.auth.getSession()!=null)
+        {
+          navigation.navigate('Home')
+        }
+
+
+
     fetchRandomAstronautImage();
   }, []);
 
@@ -25,8 +34,8 @@ const LetsGetStartedScreen = () => {
 
   return (
     <View style={styles.container}>
-      {randomAstronautImage && (
-        <ImageBackground src={randomAstronautImage} style={styles.imageBackground}>
+     
+        <ImageBackground src={"https://source.unsplash.com/featured/?money"}  style={styles.imageBackground}>
          
          <View style={styles.overlay} />
       <LottieView
@@ -55,7 +64,7 @@ const LetsGetStartedScreen = () => {
           </View>
  </View>
         </ImageBackground>
-      )}
+     
 
     </View>
   );
