@@ -65,7 +65,7 @@ const NonUnitDonationScreen = ({ navigation }) => {
       <Button
         title="Add Donation"
         buttonStyle={styles.button}
-        onPress={() => navigation.navigate('AddDonation')}
+        onPress={() => navigation.navigate('addDonate')}
       />
     </SafeAreaView>
   );

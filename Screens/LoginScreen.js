@@ -42,8 +42,15 @@ const LoginScreen = () => {
 
       if(data.user!=null)
         {
-          supabase.auth.setSession(data.session);
+       
+          
+       
+         
           navigation.navigate('Home')
+
+        
+
+        
         }
         
         if(error)

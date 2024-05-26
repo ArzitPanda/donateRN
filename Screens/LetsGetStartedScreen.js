@@ -6,17 +6,19 @@ import { Button } from '@rneui/base';
 import LogoSvg from '../LogioSvg';
 import { useNavigation } from '@react-navigation/native';
 import supabase from '../config';
+import UseAuth from '../Hooks/UseAuth';
 
 const LetsGetStartedScreen = () => {
     const navigation = useNavigation();
   const [randomAstronautImage, setRandomAstronautImage] = useState(null);
 
+  const data = UseAuth()
   useEffect(() => {
 
-      if(supabase.auth.getSession()!=null)
-        {
-          navigation.navigate('Home')
-        }
+    if(data.user!==null)
+    {
+      navigation.navigate('Home')
+    }
 
 
 

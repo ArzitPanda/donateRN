@@ -59,7 +59,21 @@ const SignupScreen = () => {
         if(data.user!==null )
           {
             
-            navigation.navigate('Login')
+
+
+            const dbdata = await supabase
+            .from('Users')
+            .insert([
+              { Name: email, Email: email,AuthId:data.user.id },
+            ])
+            .select()
+
+
+          console.log(dbdata)
+            
+
+
+         
           }
           else
           {
