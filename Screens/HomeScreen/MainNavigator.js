@@ -39,13 +39,17 @@ const MainNavigator = () => {
     />
     <Tab.Screen
       name="Add"
+
       component={HomeScreenNavigator}
       options={{
+        title:'home',
         tabBarIcon: ({ color }) => (
-          <View style={styles.addButton}>
-            <Icon name="plus" size={28} color="#121212" />
-          </View>
+      
+            <Icon name="home" size={24} color={color}  />
+       
         ),
+        tabBarBadge: 3,
+        tabBarBadgeStyle: { backgroundColor: '#ff3d00' }
       }}
     />
     <Tab.Screen

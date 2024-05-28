@@ -5,22 +5,97 @@ import { Avatar, Icon, color } from "@rneui/base";
 import colors from "../Color";
 import TextAreaWithCounter from "./Components/TextAreaWithCounter";
 import { useNavigation } from '@react-navigation/native';
-export default function FirstSigupDetails() {
+import supabase from "../config";
+import * as ImagePicker from 'expo-image-picker';
+export default function FirstSigupDetails({ route }) {
+
+  const { createUser } = route.params;
+
+  const [name,setName] = useState("");
+  const [mobile,setMobile] = useState("");
+  const [aadhar,setAadhar] = useState("");
+  const [country,setCountry] = useState("");
+  const [state,setState] = useState("");
+  const [pincode,setPincode] = useState("");
+  const [bio,setBio] = useState("");
+  const [address,setAddress] = useState("");
+
+  const [profilePicture, setProfilePicture] = useState('');
+
   const pagerRef = useRef(null);
   const [page, setPage] = useState(0);
   const navigate = useNavigation();
   const [selectedActivities, setSelectedActivities] = useState([]);
+  const handleSave = async () => {
+    const path = `public/${createUser.AuthId}`;
+    const { data, error } = await supabase
+      .storage
+      .from('danaw')
+      .upload(path, profilePicture, {
+        cacheControl: '3600',
+        upsert: true
+      });
+      
 
-  const pageTranslation = (type) => {
 
-    if (type === "FORWARD") {
-      setPage(page + 1);
-    } else {
-      setPage(page - 1);
-    }
+      const dbDetails =await supabase.from('Details').insert([{
+        AadharCard: aadhar,
+        Address: address,
+        ProfileImage: `${supabase.storage.from('danaw').getPublicUrl("").data.publicUrl}/${path}`,
+        Pincode: pincode,
+        State: state,
+        Country: country,
+        Phone: mobile,
+        activities: selectedActivities,
+        bio: bio
+      }]).select();
+
+      if(dbDetails.data.length>0)
+        {
+          const dbData  = await supabase.from('Users').insert([{
+            Name:name,
+            Email:createUser.Email,
+            AuthId:createUser.AuthId,
+            DetailsId:dbDetails.data[0].Id
+          
+  
+        }])
+
+
+        console.log(dbData.data,dbData.error)
+      if(dbData.error===null)
+        {
+          navigate.navigate("Home")
+        }
+        }
+
+
     
-    pagerRef.current?.setPage(page);
-  };
+
+
+      
+
+
+    }
+      const selectProfilePicture = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+          base64: true
+        });
+    
+        if (!result.canceled) {
+          setProfilePicture(result.assets[0]);
+        }
+      };
+
+
+
+
+
+
 
   const toggleActivity = (activity) => {
     if (selectedActivities.includes(activity)) {
@@ -46,30 +121,29 @@ export default function FirstSigupDetails() {
         <PagerView
           style={styles.container}
     
-          scrollEnabled={false}
+         
           ref={pagerRef}
-          onPageSelected={(position) => {
-            console.log(position.nativeEvent.position);
-      
-          }}
+        
         >
           <View style={styles.page} key={1}>
             <Text style={styles.headerTitle}>About Yourself</Text>
             <TextInput
               keyboardType="default"
-              value=""
+              value={name}
+              onChangeText={(text)=>{setName(text)}}
               style={styles.inputContainer}
               placeholder="Write your name"
               placeholderTextColor={colors.text.secondary}
             />
             <TextInput
               keyboardType="number-pad"
-              value=""
+              value={mobile}
+              onChangeText={(text)=>{setMobile(text)}}
               style={styles.inputContainer}
               placeholder="Your Mobile No"
               placeholderTextColor={colors.text.secondary}
             />
-            <TextAreaWithCounter />
+            <TextAreaWithCounter bio={bio} setBio={setBio} />
           </View>
           <View style={styles.page} key={2}>
             <Text style={styles.headerTitle}>Additional Details</Text>
@@ -80,10 +154,10 @@ export default function FirstSigupDetails() {
     rounded
     size="xlarge"
     source={{
-      uri:  'https://gravatar.com/avatar/b110db69554c45c0539146f082821424?s=400&d=robohash&r=x',
+      uri:  profilePicture?.uri|| 'https://gravatar.com/avatar/b110db69554c45c0539146f082821424?s=400&d=robohash&r=x',
     }}
     containerStyle={styles.avatar}
- 
+    onPress={selectProfilePicture}
   />
   <View style={styles.cameraIconContainer}>
     <Icon name="camera" size={24} color={colors.background}  />
@@ -113,79 +187,45 @@ export default function FirstSigupDetails() {
             <Text style={styles.headerTitle}>Location Details</Text>
             <TextInput
               keyboardType="default"
-              value=""
+              value={aadhar}
+              onChangeText={(text)=>{setAadhar(text)}}
               style={styles.inputContainer}
               placeholder="Enter your Aadhar Number"
               placeholderTextColor={colors.text.secondary}
             />
-            <TextInput
+           
+           <TextInput
               keyboardType="default"
-              value=""
+              value={address}
+              onChangeText={(text)=>{setAddress(text)}}
               style={styles.inputContainer}
-              placeholder="City"
+              placeholder="address"
               placeholderTextColor={colors.text.secondary}
             />
             <TextInput
               keyboardType="default"
-              value=""
+              value={country}
+              style={styles.inputContainer}
+              placeholder="Country"
+              onChangeText={(text)=>setCountry(text)}
+              placeholderTextColor={colors.text.secondary}
+            />
+   <TextInput
+              keyboardType="default"
+              value={state}
+              onChangeText={(text)=>{setState(text)}}
               style={styles.inputContainer}
               placeholder="State"
               placeholderTextColor={colors.text.secondary}
             />
-            <TextInput
-              keyboardType="default"
-              value=""
-              style={styles.inputContainer}
-              placeholder="Country"
-              placeholderTextColor={colors.text.secondary}
-            />
 
-
-              <TouchableOpacity onPress={()=>{navigate.navigate('Home')}}>
+              <TouchableOpacity onPress={handleSave}>
                 <Text>Explore</Text>
               </TouchableOpacity>
 
           </View>
         </PagerView>
-        <View
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            flexDirection: "row",
-            columnGap: 10,
-            padding: 40,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              pageTranslation("BACKWARD");
-            }}
-            disabled={page === 0}
-          >
-            <Icon
-              type="font-awesome"
-              name="chevron-left"
-              color={page === 0 ? colors.text.secondary : colors.text.primary}
-              size={24}
-              containerStyle={styles.iconContainer}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              pageTranslation("FORWARD");
-            }}
-            disabled={page === 2}
-          >
-            <Icon
-              type="font-awesome"
-              name="chevron-right"
-              color={page === 2 ? colors.text.secondary : colors.text.primary}
-              size={24}
-              containerStyle={styles.iconContainer}
-            />
-          </TouchableOpacity>
-        </View>
+       
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -269,5 +309,5 @@ const styles = StyleSheet.create({
     chipTextSelected: {
       color: colors.text.secondary,
       fontSize: 16, // Added smaller font size for selected chip text
-    },
-  });
+    }}
+  );

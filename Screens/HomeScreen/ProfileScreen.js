@@ -27,9 +27,11 @@ const [pUser,setPuser] = useState({});
         }
         const dbuser =  await supabase
         .from('Users')
-        .select("*")
-        // Filters
-        .eq('AuthId', user.id)
+        .select(`
+          *,
+          Details(*)
+        `)
+        .eq('AuthId', user.id);
 
         if(dbuser.data)
         {
@@ -75,7 +77,7 @@ const [pUser,setPuser] = useState({});
        <View style={{paddingStart:10}}>
        <LogoSvg scale={0.8} />
        </View>
-       <TouchableOpacity onPress={()=>{ navigation.navigate('ProfileEdit')}}>
+       <TouchableOpacity onPress={()=>{ navigation.navigate('ProfileEdit',{user:pUser})}}>
         <View style={styles.buttonContainer}>
    
     <Icon name='edit' color={colors.text.primary} type='font-awsome' size={24}/>
@@ -90,24 +92,24 @@ const [pUser,setPuser] = useState({});
         <Avatar
           size="large"
           rounded
-          source={{ uri: userData.profilePicture }}
+          source={{ uri: pUser?.Details?.ProfileImage || userData.profilePicture }}
           containerStyle={styles.avatar}
         />
         <View style={styles.userInfo}>
-          <Text style={styles.name}>{userData.name}</Text>
+          <Text style={styles.name}>{pUser?.Name || userData.name}</Text>
           <Text style={styles.email}>{pUser?.Email}</Text>
-          <Text style={styles.phone}>{userData.phone}</Text>
-          <Text style={styles.address}>{userData.address}</Text>
+          <Text style={styles.phone}>{pUser?.Details?.Phone}</Text>
+          <Text style={styles.address}>{pUser?.Details?.Address}</Text>
         </View>
       </View>
  
       <Divider style={styles.divider} />
       
-      <Text style={styles.bio}>{userData.bio}</Text>
+      <Text style={styles.bio}>{pUser?.Details?.bio}</Text>
       <Text style={styles.interests}>intrests</Text>
       <View style={{display:'flex',flexDirection:'row',columnGap:5}}>
       {
-        userData.interests.map((ele)=>{return (<Chip title={ele} color={colors.secondary}></Chip>)})
+        pUser?.Details?.activities?.map((ele)=>{return (<Chip title={ele} color={colors.secondary}></Chip>)})
       }
 
       </View>

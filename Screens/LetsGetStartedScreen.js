@@ -22,17 +22,8 @@ const LetsGetStartedScreen = () => {
 
 
 
-    fetchRandomAstronautImage();
   }, []);
 
-  const fetchRandomAstronautImage = async () => {
-    try {
-      const response = await axios.get('https://source.unsplash.com/featured/?money');
-      setRandomAstronautImage(response.request.responseURL);
-    } catch (error) {
-      console.error('Error fetching random astronaut image:', error);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -59,7 +50,11 @@ const LetsGetStartedScreen = () => {
 
               color={'warning'}
               buttonStyle={{...styles.button}}
-              onPress={() => {
+              onPress={async () => {
+
+
+
+
                 navigation.navigate('SignUp');
               }}
             />

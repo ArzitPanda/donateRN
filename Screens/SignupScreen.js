@@ -60,18 +60,9 @@ const SignupScreen = () => {
           {
             
 
-
-            const dbdata = await supabase
-            .from('Users')
-            .insert([
-              { Name: email, Email: email,AuthId:data.user.id },
-            ])
-            .select()
-
-
-          console.log(dbdata)
-            
-
+                
+        navigation.navigate("firstSignupDetails",{createUser: { Name: email, Email: email,AuthId:data.user.id }})
+        
 
          
           }

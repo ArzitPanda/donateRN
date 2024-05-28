@@ -2,13 +2,12 @@ import { StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native'
 import React, { useState } from 'react'
 import colors from '../../Color'
 
-const TextAreaWithCounter = () => {
+const TextAreaWithCounter = ({bio,setBio}) => {
   const limit =20
   const wordLength =(bio)=>{
       return   bio.length
   }
   const [canWrite,setCanWrite] =useState(true);
-  const [bio,setBio] =useState('');
   const [counter,setCounter] =useState(0);
   
     return (

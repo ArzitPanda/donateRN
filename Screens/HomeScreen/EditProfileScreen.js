@@ -12,12 +12,14 @@ import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import UseAuth from '../../Hooks/UseAuth';
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({route}) => {
+  const routedata = route.params ;
+
   const navigation = useNavigation()
   const [image, setImage] = useState(null);
   const [aadharCard, setAadharCard] = useState('');
   const [address, setAddress] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
+  const [profilePicture, setProfilePicture] = useState({uri:routedata.user?.Details?.ProfileImage});
   const [pincode, setPincode] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
@@ -28,6 +30,12 @@ const EditProfileScreen = () => {
   const [countryDataLoading, setCountryDataLoading] = useState(true);
 
   const { error, user } = UseAuth();
+
+
+
+  
+
+
 
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all')
@@ -62,7 +70,7 @@ const EditProfileScreen = () => {
         .insert([{
           AadharCard: aadharCard,
           Address: address,
-          ProfileImage: `${supabase.storage.from('danaw').getPublicUrl().data.publicUrl}/${path}`,
+          ProfileImage: `${supabase.storage.from('danaw').getPublicUrl("").data.publicUrl}/${path}`,
           Pincode: pincode,
           State: state,
           Country: country,
@@ -124,7 +132,7 @@ const EditProfileScreen = () => {
     <Icon name="camera" size={24} color={colors.background} onPress={selectProfilePicture} />
   </View>
 
-  <Text style={{textAlign:'center',color:colors.text.primary,fontSize:24,fontWeight:"600",marginTop:15}}>John Doe</Text>
+  <Text style={{textAlign:'center',color:colors.text.primary,fontSize:24,fontWeight:"600",marginTop:15}}>{routedata.user?.Name}</Text>
   <Text style={{textAlign:'center',color:colors.secondary,fontSize:14,fontWeight:"400"}}>Enterpreuner</Text>
 </View>
          <View style={{paddingHorizontal:5,backgroundColor:colors.background,paddingTop:20,shadowColor:colors.text.primary,shadowRadius:40,shadowOpacity:0.1,borderTopLeftRadius:30,borderTopRightRadius:30}}>
