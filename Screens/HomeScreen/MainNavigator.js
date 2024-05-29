@@ -1,4 +1,4 @@
-import { View, Text ,StyleSheet} from 'react-native'
+import { View, Text ,StyleSheet, BackHandler} from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './HomeScreens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -6,9 +6,30 @@ import MapScreen from './MapScreen';
 import HomeScreenNavigator from './HomeScreenNavigator';
 import ProfileScreen from './ProfileScreen';
 import NonUnitDonationScreen from './NonUnitDonateScreen';
+import { useEffect } from 'react';
 const Tab = createBottomTabNavigator();
-const MainNavigator = () => {
+const MainNavigator = ({navigation}) => {
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackPress
+    );
 
+    return () => backHandler.remove();
+  }, []);
+
+  const handleBackPress = () => {
+    // Check if the user is on the initial screen
+    if (navigation.getState().index === 0) {
+      // Exit the app
+      BackHandler.exitApp();
+      return true;
+    }
+
+    // Otherwise, go back to the previous screen
+    navigation.goBack();
+    return true;
+  };
   return (
     <Tab.Navigator
         

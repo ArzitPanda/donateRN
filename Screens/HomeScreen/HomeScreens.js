@@ -60,6 +60,15 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Navbar */}
+      <View style={styles.navbar}>
+          <LogoSvg scale={0.7} />
+         <TouchableOpacity onPress={()=>{navigation.navigate('SpeedDial')}}>
+         <Image
+            source={{ uri: user.pUser?.Details?.ProfileImage }}
+            style={styles.navbarProfileImage}
+          />
+         </TouchableOpacity>
+        </View>
       <TouchableOpacity
         style={{
           backgroundColor: colors.secondary,
@@ -92,20 +101,14 @@ const HomeScreen = () => {
         </View>
       </TouchableOpacity>
       <ScrollView style={styles.container}>
-        <View style={styles.navbar}>
-          <LogoSvg scale={0.7} />
-          <Image
-            source={{ uri: user.pUser?.Details?.ProfileImage }}
-            style={styles.navbarProfileImage}
-          />
-        </View>
+       
 
         {/* Card Grid */}
         <View style={styles.cardGrid}>
-          <Card title="Money Donate" icon={"credit-card"} />
-          <Card title="Food Donate" icon={"cutlery"} />
-          <Card title="Blood Donate" icon={"tint"} />
-          <Card title="Book Donate" icon={"book"} />
+          <Card title="Money Donate" icon={"credit-card"} category={2} />
+          <Card title="Food Donate" icon={"cutlery"} category={3}  />
+          <Card title="Blood Donate" icon={"tint"}  category={1} />
+          <Card title="Book Donate" icon={"book"}  category={4} />
         </View>
 
         {/* More Options */}
@@ -159,110 +162,44 @@ const HomeScreen = () => {
         transparent={true}
         visible={modalVisible}
         presentationStyle="overFullScreen"
+        onRequestClose={() => setModalVisible(false)}
         style={{ backgroundColor: colors.background }}
       >
-        <View
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              height: 300,
-              width: "100%",
-              backgroundColor: colors.primary,
-              borderTopWidth: 1,
-              borderColor: colors.secondary,
-              borderTopLeftRadius: 20,
-              borderTopEndRadius: 20,
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: colors.secondary,
-                padding: 10,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexDirection: "row",
-              }}
-            >
-              <Text>DonationDetails</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                }}
-              >
-                <Icon
-                  type="font-awsome"
-                  name="close"
-                  color={colors.primaryOpacity}
-                  size={24}
-                />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                flex: 1,
-                rowGap: 2,
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  backgroundColor: colors.primaryOpacity,
-                  padding: 5,
-                  width: "80%",
-                  paddingVertical: 10,
-                  borderRadius: 4,
-                  marginHorizontal: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "800",
-                    color: colors.secondary,
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalHeaderText}>Donation Details</Text>
+              <View style={styles.modalBody}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalButtonWithIcon]}
+                  onPress={() => handleDonateAction()}
+                >
+                  <Icon
+                    type="font-awesome-5"
+                    name="hand-holding-heart"
+                    color={colors.text.primary}
+                    size={20}
+                    style={styles.modalButtonIcon}
+                  />
+                  <Text style={styles.modalButtonText}>Want to Donate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalButtonWithIcon]}
+                  onPress={() => {
+                    setModalVisible(false);
+                    navigation.navigate("AddDonationRequest");
                   }}
                 >
-                  want to Donate
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: colors.primaryOpacity,
-                  padding: 5,
-                  width: "80%",
-                  paddingVertical: 10,
-                  borderRadius: 4,
-                  marginHorizontal: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-
-
-                onPress={()=>{navigation.navigate('AddDonationRequest')}}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "800",
-                    color: colors.secondary,
-                  }}
-                >
-                  Donation Request
-                </Text>
-              </TouchableOpacity>
+                  <Icon
+                    type="font-awesome-5"
+                    name="donate"
+                    color={colors.text.primary}
+                    size={20}
+                    style={styles.modalButtonIcon}
+                  />
+                  <Text style={styles.modalButtonText}>Donation Request</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -271,12 +208,23 @@ const HomeScreen = () => {
   );
 };
 
-const Card = ({ title, icon }) => {
+const Card = ({ title, icon ,category}) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Add", { screen: "Map" });
+        
+          if(category===1 || category ===2)
+            {
+              navigation.navigate("requestList");
+            }
+            else
+            {
+              navigation.navigate("Add", { screen: "Map" });
+            }
+
+
+
       }}
       style={styles.card}
     >
@@ -298,6 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    marginTop:20,
     paddingHorizontal: 10,
   },
   navbarTitle: {
@@ -376,6 +325,52 @@ const styles = StyleSheet.create({
   feedItemDescription: {
     color: "#aaa",
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: colors.primaryOpacity,
+  },
+  modalContent: {
+    backgroundColor: colors.primary,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  modalHeaderText: {
+    color: colors.text.primary,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalBody: {
+    rowGap: 16,
+  },
+  modalButton: {
+    backgroundColor: colors.secondary,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalButtonWithIcon: {
+    paddingHorizontal: 24,
+  },
+  modalButtonIcon: {
+    marginRight: 8,
+  },
+  modalButtonText: {
+    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
 
 export default HomeScreen;

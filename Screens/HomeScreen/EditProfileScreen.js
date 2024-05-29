@@ -29,7 +29,7 @@ const EditProfileScreen = ({route}) => {
   const [countries, setCountries] = useState([]);
   const [countryDataLoading, setCountryDataLoading] = useState(true);
 
-  const { error, user } = UseAuth();
+
 
 
 

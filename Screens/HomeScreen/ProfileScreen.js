@@ -9,50 +9,15 @@ import { Chip, Icon } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
 import supabase from '../../config';
+import useAuthUser from '../../Hooks/UseAuthUser';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-const [pUser,setPuser] = useState({});
+
+  const userAuth = useAuthUser();
+  const pUser = userAuth.pUser;
   
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser();
 
-       
-
-        if (error) {
-          console.error(error);
-          return;
-        }
-        const dbuser =  await supabase
-        .from('Users')
-        .select(`
-          *,
-          Details(*)
-        `)
-        .eq('AuthId', user.id);
-
-        if(dbuser.data)
-        {
-          setPuser(dbuser.data[0])
-          console.log(dbuser.data[0])
-        }
-
-       
-        ToastAndroid.show(user.toString(), ToastAndroid.SHORT);
-        
-
-
-
-        console.log(user);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    };
-  
-    fetchUser();
-  }, []);
 
 
   const userData = {
@@ -73,7 +38,7 @@ const [pUser,setPuser] = useState({});
 
   return (
    <SafeAreaView style={styles.container}>
-       <View style={{ marginTop:10,marginHorizontal:1,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+       <View style={{ marginTop:20,marginHorizontal:1,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
        <View style={{paddingStart:10}}>
        <LogoSvg scale={0.8} />
        </View>
@@ -137,7 +102,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-   paddingHorizontal:15
+   paddingHorizontal:15,
+   paddingTop:20
   },
   bannerImage: {
     width: '100%',

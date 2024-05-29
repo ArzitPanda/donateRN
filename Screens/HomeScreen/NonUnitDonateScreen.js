@@ -1,31 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet,Image, Text, ActivityIndicator} from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, ActivityIndicator, RefreshControl } from 'react-native';
 import { Button, ListItem, Icon } from '@rneui/base';
-import axios from 'axios';
 import colors from '../../Color'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoSvg from '../../LogioSvg';
+import supabase from '../../config';
 
 const NonUnitDonationScreen = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const { data, error } = await supabase.from('AntiUnitDonations').select('*').range(0, 10);
+
+      if (error) {
+        throw new Error(error.message);
+      } else {
+        setData(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const jsonData = require('../../Dummy/AntiUnitDonation.json');
-        setData(jsonData);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  if (loading) {
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
+
+  if (loading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.accent} />
@@ -35,21 +47,23 @@ const NonUnitDonationScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={{ marginTop:10,marginHorizontal:25}}>
+      <View style={{ marginTop: 10, marginHorizontal: 25 }}>
         <LogoSvg scale={0.8} />
-        </View>
-      <ScrollView>
-
-        <Text style={{fontSize:20,marginHorizontal:20,color:colors.secondary,marginTop:10,marginBottom:20}}>Recent Donations</Text>
-
-
+      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <Text style={styles.heading}>Recent Donations</Text>
 
         {data.map((item, index) => (
-          <ListItem key={index}   
-          containerStyle={{backgroundColor:colors.primaryOpacity,marginHorizontal:20,borderWidth:1,borderColor:colors.primary,marginVertical:3,borderRadius:10}}
-          style={{backgroundColor:colors.background}}
-        >
-             <Image   source={require("../../charity-box.png")} style={{width:50,height:60,rotation:'180deg'}}/>
+          <ListItem
+            key={index}
+            containerStyle={styles.listItemContainer}
+            style={styles.listItemStyle}
+          >
+            <Image source={require("../../charity-box.png")} style={styles.charityImage} />
             <ListItem.Content>
               <ListItem.Title style={styles.title}>{item.Title}</ListItem.Title>
               <ListItem.Subtitle style={styles.subtitle}>{item.Description}</ListItem.Subtitle>
@@ -58,9 +72,6 @@ const NonUnitDonationScreen = ({ navigation }) => {
             </ListItem.Content>
           </ListItem>
         ))}
-        {/* <Image   source={require("../../charity-box.png")} style={{width:100,height:200}}/> */}
-
-
       </ScrollView>
       <Button
         title="Add Donation"
@@ -81,6 +92,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
+  },
+  heading: {
+    fontSize: 20,
+    marginHorizontal: 20,
+    color: colors.secondary,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  listItemContainer: {
+    backgroundColor: colors.primaryOpacity,
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    marginVertical: 3,
+    borderRadius: 10,
+  },
+  listItemStyle: {
+    backgroundColor: colors.background,
+  },
+  charityImage: {
+    width: 50,
+    height: 60,
+    transform: [{ rotate: '180deg' }],
   },
   title: {
     color: colors.text.primary,

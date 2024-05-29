@@ -63,28 +63,32 @@ const AddDonateScreen = () => {
    
   const handleImagePicker = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+      base64: true
     });
 
     if (!result.canceled) {
-      setPhotos([...result.assets]);
+      setPhotos([result.assets[0]]);
     }
   };
 
   const uploadImageToSupabase = async (photo) => {
 
 
-    const path = `public/${Date.now().toString() + "-" + photo.fileName}`;
+    const path = `public/${Date.now().toString()}`;
     const { data, error } = await supabase
       .storage
       .from('danaw')
       .upload(path, photo, {
         cacheControl: '3600',
         upsert: false
-      });;
+      })
     if (error) {
+
+      console.log("here is error")
       throw error;
     }
     console.log('Uploading image', data,error);
@@ -97,16 +101,21 @@ const AddDonateScreen = () => {
 
     try {
 
-       const photourl = uploadImageToSupabase(photos[0])
+       const photourl =await uploadImageToSupabase(photos[0])
+console.log(photourl.status)
+
 const dataToInsert  =  {
   DonorId: authUser.pUser?.Id, // Assuming DonorId is available, replace with actual donor ID
   Category: value,
   Title: title,
   Description: description,
-  PhotoUrls: JSON.stringify([photourl]), // Assuming PhotoUrls is stored as a JSON string
+  PhotoUrls: photourl, // Assuming PhotoUrls is stored as a JSON string
   Location: location,
   Lattitude: latitude,
   Longitude: longitude,
+  Timing:new Date().toISOString(),
+  CreatedAt: new Date().toISOString(),
+
   // Convert Date object to string
 }
 
@@ -117,12 +126,14 @@ const dataToInsert  =  {
         ]);
 
       if (error) {
+        console.log("121"+error);
         Alert.alert('Error', error.message);
       } else {
         Alert.alert('Success', 'Donation added successfully.');
         // Reset form or navigate to another screen
       }
     } catch (error) {
+      console.log(error)
       Alert.alert('Error', error.message);
     }
   };

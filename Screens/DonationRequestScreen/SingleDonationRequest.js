@@ -14,14 +14,14 @@ const SingleDonationRequest = ({ route }) => {
 
   const shareContent = async () => {
     const shareOptions = {
-      message: `Check out this donation request from ${request.name}: ${request.cause}. Details: ${request.description}`,
+      message: `Check out this donation request from ${request.Users.Name}: ${request.Title}. Details: ${request.Description}`,
     };
 
     try {
       const result = await Share.share({
-        message: shareOptions,
+        message: shareOptions.message,
         url: "upi://arzitpanda.com",
-        title: "check out "
+        title: "Check out this donation request",
       });
 
       if (result.action === Share.sharedAction) {
@@ -39,69 +39,76 @@ const SingleDonationRequest = ({ route }) => {
   };
 
   return (
-    <SafeAreaView>
-    <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity style={styles.shareButton} onPress={shareContent}>
-        <Text style={styles.shareButtonText}>Share</Text>
-      </TouchableOpacity>
-      <Text style={styles.name}>{request.name}</Text>
-      <Text style={styles.details}>{request.cause}</Text>
-      <Text style={styles.description}>{request.description}</Text>
-      {!request.images && (
-        <PagerView style={{ height: 300, width: '100%' }} initialPage={0}>
-          <View style={styles.page} key="1">
-            <Text>First page</Text>
-            <Text>Swipe ➡️</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <TouchableOpacity style={styles.shareButton} onPress={shareContent}>
+          <Text style={styles.shareButtonText}>Share</Text>
+        </TouchableOpacity>
+        <Text style={styles.name}>{request.Users.Name}</Text>
+        <Text style={styles.details}>{request.Title}</Text>
+        <Text style={styles.description}>{request.Description}</Text>
+
+        {request.PhotoUrls ? (
+          <PagerView style={styles.pagerView} initialPage={0}>
+            {request.PhotoUrls.split(',').map((url, index) => (
+              <View style={styles.page} key={index}>
+                <Image source={{ uri: url }} style={styles.carouselImage} />
+              </View>
+            ))}
+          </PagerView>
+        ) : (
+          <View style={styles.page}>
+            <Text>No images available</Text>
           </View>
-          <View style={styles.page} key="2">
-            <Text>Second page</Text>
+        )}
+
+        {request.Category === 1 ? (
+          <View style={styles.qrContainer}>
+            <QRCode value={request.Donations} size={150} />
           </View>
-          <View style={styles.page} key="3">
-            <Text>Third page</Text>
-          </View>
-        </PagerView>
-      )}
-      {request.category === 1 ? (
-        <View style={styles.qrContainer}>
-          <QRCode value={request.bankDetails} size={150} />
+        ) : (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker coordinate={{ latitude: 37.7987, longitude: -122.4354 }} title="Donation Location" />
+          </MapView>
+        )}
+
+        <Text style={styles.sectionTitle}>Description</Text>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.descriptionText}>
+            {request.Description}
+          </Text>
         </View>
-      ) : (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <Marker coordinate={{ latitude: 37.7987, longitude: -122.4354 }} title="Donation Location" />
-        </MapView>
-      )}
-
-     <Text style={{backgroundColor:colors.secondary,padding:10,borderRadius:8,color:colors.text.primary}}>Description</Text>
-     <View style={{marginVertical:10,backgroundColor:colors.primaryOpacity,padding:10,borderRadius:10}}>
-        <Text style={{color:colors.text.secondary,textAlign:'justify'}}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
-     </View>
-
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
     backgroundColor: colors.background,
+  },
+  contentContainer: {
+    padding: 16,
   },
   shareButton: {
     alignSelf: 'flex-end',
-
     backgroundColor: colors.primary,
     padding: 12,
     borderRadius: 8,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   shareButtonText: {
     color: colors.text.primary,
@@ -121,11 +128,16 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 18,
     color: colors.text.primary,
-    marginBottom: 4,
+    marginBottom: 12,
     lineHeight: 26,
   },
+  pagerView: {
+    height: 300,
+    width: '100%',
+    marginBottom: 20,
+  },
   carouselImage: {
-    width: width - 60,
+    width: width - 32,
     height: 200,
     borderRadius: 10,
   },
@@ -135,17 +147,44 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryOpacity,
     borderRadius: 12,
     padding: 16,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   map: {
     height: 300,
     marginVertical: 20,
     borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  sectionTitle: {
+    backgroundColor: colors.secondary,
+    padding: 10,
+    borderRadius: 8,
+    color: colors.text.primary,
+    fontSize: 18,
+    marginVertical: 10,
+  },
+  descriptionContainer: {
+    backgroundColor: colors.primaryOpacity,
+    padding: 10,
+    borderRadius: 10,
+  },
+  descriptionText: {
+    color: colors.text.secondary,
+    textAlign: 'justify',
   },
   page: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
     borderRadius: 12,
     padding: 16,
   },

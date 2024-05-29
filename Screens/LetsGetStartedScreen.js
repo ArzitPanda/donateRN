@@ -7,22 +7,13 @@ import LogoSvg from '../LogioSvg';
 import { useNavigation } from '@react-navigation/native';
 import supabase from '../config';
 import UseAuth from '../Hooks/UseAuth';
+import useAuthUser from '../Hooks/UseAuthUser';
 
 const LetsGetStartedScreen = () => {
     const navigation = useNavigation();
   const [randomAstronautImage, setRandomAstronautImage] = useState(null);
 
-  const data = UseAuth()
-  useEffect(() => {
 
-    if(data.user!==null)
-    {
-      navigation.navigate('Home')
-    }
-
-
-
-  }, []);
 
 
   return (
@@ -55,7 +46,7 @@ const LetsGetStartedScreen = () => {
 
 
 
-                navigation.navigate('SignUp');
+                navigation.navigate('Login');
               }}
             />
           </View>

@@ -16,10 +16,12 @@ const useAuthUser = () => {
         if (cachedUser) {
           setPUser(cachedUser);
           setLoading(false);
+          ToastAndroid.show(cachedUser?.Email +" "+"from db", ToastAndroid.SHORT);
+          return;
         }
 
         const { data: { user }, error } = await supabase.auth.getUser();
-
+          console.log("not calling this")
         if (error) {
           console.error('Error fetching user:', error);
           return;

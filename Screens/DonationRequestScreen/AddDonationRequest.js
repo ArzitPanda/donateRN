@@ -1,30 +1,76 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, ImageBackground } from 'react-native';
-import { Button, Input, Text, Avatar, Overlay } from '@rneui/themed';
-
+import { View, ScrollView, StyleSheet, ImageBackground, ToastAndroid, TouchableOpacity } from 'react-native';
+import { Button, Input, Text, Avatar, Overlay, Chip } from '@rneui/themed';
 import colors from '../../Color';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoSvg from '../../LogioSvg';
+import supabase from '../../config';
+import useAuthUser from '../../Hooks/UseAuthUser';
+import { Icon } from '@rneui/base';
+import { useNavigation } from '@react-navigation/native';
 
 const DonationRequestScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(null);
   const [seekingAmount, setSeekingAmount] = useState('');
-  const [photoUrls, setPhotoUrls] = useState([]);
+  const [photoUrl, setPhotoUrl] = useState(null);
   const [visible, setVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+
+  const navigation = useNavigation();
+  const auth = useAuthUser();
+
   const handleSubmit = async () => {
-    // ... (existing submit logic)
+    if (!category) {
+      ToastAndroid.show('Please select a category', ToastAndroid.SHORT);
+      return;
+    }
+
+    const path = `public/${Date.now().toString() + "-" + auth.pUser?.Id}`;
+    const image = await supabase
+      .storage
+      .from('danaw')
+      .upload(path, selectedImage, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (image.error === null) {
+      const { data, error } = await supabase
+        .from('UnitDonations')
+        .insert([
+          {
+            Title: title,
+            Description: description,
+            Category: category,
+            SeekingAmount: seekingAmount,
+            PhotoUrls: `${supabase.storage.from('danaw').getPublicUrl("").data.publicUrl}/${path}`,
+            RequestorId: auth.pUser?.Id,
+          },
+        ])
+        .select();
+
+      if (error) {
+        ToastAndroid.show('Error inserting data:', ToastAndroid.SHORT);
+      } else {
+        ToastAndroid.show('Donate request added successfully', ToastAndroid.SHORT);
+        setTitle('');
+        setDescription('');
+        setCategory(null);
+        setSeekingAmount('');
+        setPhotoUrl(null);
+      }
+    }
   };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [16, 9], // Landscape aspect ratio
       quality: 1,
     });
 
@@ -36,19 +82,24 @@ const DonationRequestScreen = () => {
 
   const addPhotoUrl = () => {
     if (selectedImage) {
-      setPhotoUrls([...photoUrls, selectedImage]);
+      setPhotoUrl(selectedImage);
       setVisible(false);
       setSelectedImage(null);
     }
   };
 
   return (
-    <SafeAreaView
-      style={styles.backgroundImage}
-    >
-        <View style={{backgroundColor:colors.primaryOpacity,padding:20}}>
+    <SafeAreaView style={styles.backgroundImage}>
+      <View style={{ backgroundColor: colors.primaryOpacity, padding: 20 ,display:'flex',flexDirection:'row',columnGap:10}}>
+    <TouchableOpacity onPress={()=>{
+        navigation.goBack();
+
+
+    }}>
+    <Icon name="chevron-left" type='font-awsome' size={24} color={colors.text.primary}/>
+    </TouchableOpacity>
         <LogoSvg scale={0.8} />
-        </View>
+      </View>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
@@ -61,22 +112,32 @@ const DonationRequestScreen = () => {
           inputContainerStyle={styles.inputContainer}
           labelStyle={styles.label}
         />
-        <Input
-          label="Description"
+        <DescriptionInput
           value={description}
           onChangeText={setDescription}
-          inputStyle={styles.input}
-          inputContainerStyle={styles.inputContainer}
-          labelStyle={styles.label}
+          style={styles.descriptionInput}
         />
-        <Input
-          label="Category"
-          value={category}
-          onChangeText={setCategory}
-          inputStyle={styles.input}
-          inputContainerStyle={styles.inputContainer}
-          labelStyle={styles.label}
-        />
+        <View style={styles.categoryContainer}>
+          <Text style={styles.label}>Category</Text>
+          <View style={styles.categoryChips}>
+            <Chip
+              title="Blood"
+              containerStyle={[
+                styles.chip,
+                category === 1 && styles.selectedChip,
+              ]}
+              onPress={() => setCategory(1)}
+            />
+            <Chip
+              title="Money"
+              containerStyle={[
+                styles.chip,
+                category === 2 && styles.selectedChip,
+              ]}
+              onPress={() => setCategory(2)}
+            />
+          </View>
+        </View>
         <Input
           label="Seeking Amount"
           value={seekingAmount}
@@ -86,23 +147,17 @@ const DonationRequestScreen = () => {
           labelStyle={styles.label}
         />
         <View style={styles.photoContainer}>
-          <Text style={styles.label}>Photo URLs</Text>
-          <View style={styles.photoList}>
-            {photoUrls.map((url, index) => (
-              <Avatar
-                key={index}
-                source={{ uri: url }}
-                size="small"
-                rounded
-                containerStyle={styles.photoAvatar}
+          <Text style={styles.label}>Photo</Text>
+          <View style={styles.photoPreview}>
+        
+            {!photoUrl && (
+              <Button
+                title="Add Photo"
+                onPress={pickImage}
+                buttonStyle={styles.addPhotoButton}
+                titleStyle={styles.addPhotoButtonText}
               />
-            ))}
-            <Button
-              title="Add Photo"
-              onPress={pickImage}
-              buttonStyle={styles.addPhotoButton}
-              titleStyle={styles.addPhotoButtonText}
-            />
+            )}
           </View>
         </View>
         <Button
@@ -112,23 +167,7 @@ const DonationRequestScreen = () => {
           titleStyle={styles.buttonText}
         />
       </ScrollView>
-      <Overlay
-        isVisible={visible}
-        onBackdropPress={() => setVisible(false)}
-        overlayStyle={styles.overlay}
-      >
-        <ImageBackground
-          source={{ uri: selectedImage }}
-          style={styles.overlayImage}
-        >
-          <Button
-            title="Add Photo"
-            onPress={addPhotoUrl}
-            buttonStyle={styles.overlayButton}
-            titleStyle={styles.overlayButtonText}
-          />
-        </ImageBackground>
-      </Overlay>
+   
     </SafeAreaView>
   );
 };
@@ -137,7 +176,6 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: 'cover',
-  
   },
   container: {
     flex: 1,
@@ -148,17 +186,26 @@ const styles = StyleSheet.create({
   },
   input: {
     color: colors.text.primary,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    padding: 12,
+    shadowColor: colors.text.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   inputContainer: {
-    borderBottomColor: colors.text.primary,
+    borderBottomWidth: 0,
   },
   label: {
     color: colors.text.primary,
     fontWeight: 'bold',
+    marginBottom: 8,
   },
   button: {
     marginTop: 16,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   buttonText: {
     color: colors.text.primary,
@@ -167,14 +214,14 @@ const styles = StyleSheet.create({
   photoContainer: {
     marginVertical: 16,
   },
-  photoList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  photoPreview: {
     alignItems: 'center',
   },
-  photoAvatar: {
-    marginRight: 8,
-    marginBottom: 8,
+  photoImage: {
+    width: '100%',
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addPhotoButton: {
     backgroundColor: colors.secondary,
@@ -183,6 +230,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   addPhotoButtonText: {
+    color: colors.text.primary,
+    fontWeight: 'bold',
+  },
+  changePhotoButton: {
+    backgroundColor: colors.primaryOpacity,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  changePhotoButtonText: {
     color: colors.text.primary,
     fontWeight: 'bold',
   },
@@ -207,6 +264,48 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     fontWeight: 'bold',
   },
+  categoryContainer: {
+    marginVertical: 16,
+  },
+  categoryChips: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  chip: {
+    marginRight: 8,
+    backgroundColor: colors.primary,
+  },
+  selectedChip: {
+    backgroundColor: colors.accent,
+  },
+  descriptionInput: {
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    padding: 12,
+    shadowColor: colors.text.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    color: colors.text.primary,
+  },
 });
+
+// DescriptionInput component
+const DescriptionInput = ({ value, onChangeText, style }) => {
+  return (
+    <Input
+      label="Description"
+      value={value}
+      onChangeText={onChangeText}
+      inputStyle={style}
+      inputContainerStyle={styles.inputContainer}
+      labelStyle={styles.label}
+      multiline
+    />
+  );
+};
 
 export default DonationRequestScreen;
