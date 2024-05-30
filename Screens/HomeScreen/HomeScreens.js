@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { WebView } from "react-native-webview";
 import useAuthUser from "../../Hooks/UseAuthUser";
 import colors from "../../Color";
+import { getFromLocalStorage, saveToLocalStorage } from "../../Hooks/LocalStorageUtils";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -34,12 +35,19 @@ const HomeScreen = () => {
 
   const fetchNewsData = async () => {
     try {
+      const cachedData = await getFromLocalStorage('newsData');
+      if (cachedData) {
+        setFeedData(cachedData);
+        return;
+      }
+
       const response = await fetch(
         `https://newsapi.org/v2/everything?q=charity&apiKey=${"8f0a4346048942d4b863d2c3958ad484"}`
       );
       const data = await response.json();
       if (data.status === "ok") {
         setFeedData(data.articles);
+        await saveToLocalStorage('newsData', data.articles, 24 * 60 * 60 * 1000); // Cache for 1 day
       } else {
         ToastAndroid.show("Failed to fetch news", ToastAndroid.SHORT);
       }
@@ -48,7 +56,6 @@ const HomeScreen = () => {
       ToastAndroid.show("Failed to fetch news", ToastAndroid.SHORT);
     }
   };
-
   const handleArticlePress = (url) => {
     navigation.navigate("ArticleWebView", { url });
   };

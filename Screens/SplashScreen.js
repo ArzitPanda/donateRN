@@ -6,32 +6,24 @@ import useAuthUser from '../Hooks/UseAuthUser'
 import { useNavigation } from '@react-navigation/native'
 
 const SplashScreen = () => {
+  const data = useAuthUser()
     const navigation = useNavigation();
-    const [hasRendered, setHasRendered] = useState(false);
 
-  useEffect(() => {
-    if (!hasRendered) {
-      setHasRendered(true);
-    } else {
-      // Remove the screen from the navigation stack
-      navigation.goBack();
-    }
-  }, [hasRendered, navigation]);
-  
-    const data = useAuthUser()
+
     useEffect(() => {
+      const timer = setTimeout(() => {
+        if (data.error === false) {
+          navigation.navigate('Home');
+        } else {
+          navigation.navigate('LetsGetStarted');
+        }
+      }, 2000);
+    
+      return () => clearTimeout(timer); // Cleanup the timer if the component unmounts
+    }, [data.error]);
   
-      if(data.pUser!==null)
-      {
-        navigation.navigate('Home')
-      }
-      else{
-        navigation.navigate('LetsGetStarted')
-      }
   
   
-  
-    }, []);
   return (
     <View style={{flex:1,backgroundColor:colors.background,display:'flex',alignItems:'center',justifyContent:'center'}}>
       <LogoSvg scale={0.9}/>

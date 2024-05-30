@@ -5,9 +5,9 @@ import supabase from '../config';
 
 
 const useAuthUser = () => {
-  const [pUser, setPUser] = useState({});
+  const [pUser, setPUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(true);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -16,6 +16,7 @@ const useAuthUser = () => {
         if (cachedUser) {
           setPUser(cachedUser);
           setLoading(false);
+          setError(false)
           ToastAndroid.show(cachedUser?.Email +" "+"from db", ToastAndroid.SHORT);
           return;
         }
@@ -24,6 +25,7 @@ const useAuthUser = () => {
           console.log("not calling this")
         if (error) {
           console.error('Error fetching user:', error);
+          setError(true)
           return;
         }
 
@@ -38,17 +40,20 @@ const useAuthUser = () => {
 
         if (dbError) {
           console.error('Error fetching user details:', dbError);
+          setError(true)
           return;
         }
 
         if (dbUser) {
           setPUser(dbUser);
           setLoading(false);
+          setError(false)
           await saveToLocalStorage('userData', dbUser);
         }
 
         ToastAndroid.show(user.email, ToastAndroid.SHORT);
       } catch (error) {
+        setError(true)
         console.error('Error fetching user:', error);
       }
     };
@@ -87,7 +92,7 @@ const useAuthUser = () => {
     }
   };
 
-  return { pUser, loading, refreshUserData };
+  return { pUser, loading, refreshUserData,error };
 };
 
 const saveToLocalStorage = async (key, value) => {
