@@ -92,7 +92,24 @@ const useAuthUser = () => {
     }
   };
 
-  return { pUser, loading, refreshUserData,error };
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+        return;
+      }
+
+      await AsyncStorage.removeItem('userData');
+      setPUser(null);
+      setError(true);
+      ToastAndroid.show("Logged out successfully", ToastAndroid.SHORT);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  return { pUser, loading, refreshUserData, logout, error };
 };
 
 const saveToLocalStorage = async (key, value) => {

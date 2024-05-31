@@ -29,7 +29,7 @@ const DonationRequestScreen = () => {
       return;
     }
 
-    const path = `public/${Date.now().toString() + "-" + auth.pUser?.Id}`;
+    const path = `public/${Date.now().toString()}`;
     const image = await supabase
       .storage
       .from('danaw')
@@ -72,10 +72,11 @@ const DonationRequestScreen = () => {
       allowsEditing: true,
       aspect: [16, 9], // Landscape aspect ratio
       quality: 1,
+      base64:true, 
     });
 
     if (!result.cancelled) {
-      setSelectedImage(result.uri);
+      setSelectedImage(result.assets[0]);
       setVisible(true);
     }
   };

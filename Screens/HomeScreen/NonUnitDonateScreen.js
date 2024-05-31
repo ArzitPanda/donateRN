@@ -62,6 +62,7 @@ const NonUnitDonationScreen = ({ navigation }) => {
             key={index}
             containerStyle={styles.listItemContainer}
             style={styles.listItemStyle}
+            onPress={() =>{navigation.navigate('Map',{data: item,singleItem: true,category:null})}}
           >
             <Image source={require("../../charity-box.png")} style={styles.charityImage} />
             <ListItem.Content>

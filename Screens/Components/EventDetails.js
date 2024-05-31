@@ -5,19 +5,19 @@ import colors from '../../Color';
 const EventDetails = ({ eventData }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{eventData.title}</Text>
+      <Text style={styles.title}>{eventData.Title}</Text>
       <View style={styles.detailsContainer}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>📍</Text>
         </View>
-        <Text style={styles.detailText}>{eventData.address}</Text>
+        <Text style={styles.detailText}>{eventData.Location}</Text>
       </View>
       <View style={styles.detailsContainer}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>⏰</Text>
         </View>
         <Text style={styles.detailText}>
-          {eventData.timing} on {eventData.date}
+          {eventData.Timing}
         </Text>
       </View>
     </View>

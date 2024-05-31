@@ -5,12 +5,14 @@ import colors from '../Color';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoSvg from '../LogioSvg';
+import useAuthUser from '../Hooks/UseAuthUser';
 
 const SpeedDialScreen = () => {
   const navigation = useNavigation();
-
+  const auth = useAuthUser();
   const handleLogout = () => {
-    // Implement your logout logic here
+    auth.logout();
+    navigation.navigate('LetsGetStarted')
   };
 
   const navigateTo = (screen) => {
@@ -34,7 +36,7 @@ const SpeedDialScreen = () => {
         <Avatar
           rounded
           size="medium"
-          source={{ uri: 'https://via.placeholder.com/150' }} // Replace with your avatar image
+          source={{ uri: auth.pUser?.Details?.ProfileImage }} // Replace with your avatar image
           containerStyle={styles.avatar}
         />
         <View style={styles.userDetails}>
@@ -103,7 +105,7 @@ const SpeedDialScreen = () => {
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.logoutButtonText}>Log Out</Text>
       </TouchableOpacity>
     </ScrollView>
     </SafeAreaView>
@@ -179,15 +181,17 @@ const styles = StyleSheet.create({
       marginLeft: 8,
     },
     logoutButton: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.secondary,
       paddingVertical: 12,
       paddingHorizontal: 16,
       borderRadius: 8,
       alignItems: 'center',
-      marginTop: 24,
+      marginTop: 12,
+      marginBottom:20,
+      marginHorizontal:15,
     },
     logoutButtonText: {
-      color: colors.text.primary,
+      color: 'black',
       fontSize: 16,
       fontWeight: 'bold',
     },

@@ -32,7 +32,7 @@ const MainNavigator = ({navigation}) => {
   };
   return (
     <Tab.Navigator
-        
+        initialRouteName='Add'
     screenOptions={{
       headerShown: false,
     

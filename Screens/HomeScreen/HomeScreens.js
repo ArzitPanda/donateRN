@@ -132,7 +132,7 @@ const HomeScreen = () => {
           </View>
         </View>
         <View style={styles.feedSection}>
-          {feedData.map((item, index) => (
+          {feedData.slice(0,10).map((item, index) => (
             <TouchableOpacity
               key={index}
               style={styles.feedItem}
@@ -227,7 +227,7 @@ const Card = ({ title, icon ,category}) => {
             }
             else
             {
-              navigation.navigate("Add", { screen: "Map" });
+              navigation.navigate("Map",{data:null,singleItem: false});
             }
 
 
