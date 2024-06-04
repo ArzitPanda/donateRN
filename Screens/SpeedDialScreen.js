@@ -10,8 +10,10 @@ import useAuthUser from '../Hooks/UseAuthUser';
 const SpeedDialScreen = () => {
   const navigation = useNavigation();
   const auth = useAuthUser();
-  const handleLogout = () => {
-    auth.logout();
+
+
+  const handleLogout =async () => {
+     await auth.logout();
     navigation.navigate('LetsGetStarted')
   };
 
@@ -40,8 +42,8 @@ const SpeedDialScreen = () => {
           containerStyle={styles.avatar}
         />
         <View style={styles.userDetails}>
-          <Text style={styles.name}>John Doe</Text>
-          <Text style={styles.email}>john.doe@example.com</Text>
+          <Text style={styles.name}>{auth.pUser?.Name}</Text>
+          <Text style={styles.email}>{auth.pUser?.Email}</Text>
           <Text style={styles.age}>Age: 25</Text>
         </View>
       </View>
@@ -49,11 +51,11 @@ const SpeedDialScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Profile</Text>
         <View style={styles.sectionContainer}>
-     <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('ViewProfile')}>
+     <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('Home',{screen:'Profiles'})}>
           <Icon name="user" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>View Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('EditProfile')}>
+        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('ProfileEdit')}>
           <Icon name="edit" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Edit Profile</Text>
         </TouchableOpacity>
@@ -67,7 +69,7 @@ const SpeedDialScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Donation</Text>
       <View style={styles.sectionContainer}>
-      <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('AddDonation')}>
+      <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('addDonate')}>
           <Icon name="plus" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Add Donation</Text>
         </TouchableOpacity>
@@ -75,7 +77,7 @@ const SpeedDialScreen = () => {
           <Icon name="list" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Your Donations</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('DonationRequests')}>
+        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('requestList')}>
           <Icon name="inbox" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Donation Requests</Text>
         </TouchableOpacity>
@@ -89,15 +91,15 @@ const SpeedDialScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Help</Text>
         <View style={styles.sectionContainer}>
-        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('Help')}>
+        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('Terms')}>
           <Icon name="question" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Help</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.option,styles.optionEven]} onPress={() => navigateTo('TermsAndConditions')}>
+        <TouchableOpacity style={[styles.option,styles.optionEven]} onPress={() => navigateTo('Terms')}>
           <Icon name="file-text" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>Terms and Conditions</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('AboutService')}>
+        <TouchableOpacity style={[styles.option,styles.optionEven]}  onPress={() => navigateTo('Terms')}>
           <Icon name="info" type="font-awesome" color={colors.secondary} />
           <Text style={styles.optionText}>About the Service</Text>
         </TouchableOpacity>

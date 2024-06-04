@@ -112,10 +112,10 @@ const HomeScreen = () => {
 
         {/* Card Grid */}
         <View style={styles.cardGrid}>
-          <Card title="Money Donate" icon={"credit-card"} category={2} />
-          <Card title="Food Donate" icon={"cutlery"} category={3}  />
+          <Card title="Money Donate" icon={"credit-card"} category={4} />
+          <Card title="Food Donate" icon={"cutlery"} category={2}  />
           <Card title="Blood Donate" icon={"tint"}  category={1} />
-          <Card title="Book Donate" icon={"book"}  category={4} />
+          <Card title="Cloth Donate" icon={"google-wallet"}  category={3} />
         </View>
 
         {/* More Options */}
@@ -173,10 +173,19 @@ const HomeScreen = () => {
         style={{ backgroundColor: colors.background }}
       >
         <View style={styles.modalContainer}>
+        
           <View style={styles.modalContent}>
+        
             <View style={styles.modalHeader}>
-              <Text style={styles.modalHeaderText}>Donation Details</Text>
+            <Text style={styles.modalHeaderText}>Donation Details</Text>
+            <TouchableOpacity  onPress={()=>{setModalVisible(false)}}>
+            <Icon name="cancel" type="font-awsome" size={24} color={colors.accent}/>
+          </TouchableOpacity>
+
+          </View>
+             
               <View style={styles.modalBody}>
+                
                 <TouchableOpacity
                   style={[styles.modalButton, styles.modalButtonWithIcon]}
                   onPress={() => handleDonateAction()}
@@ -207,7 +216,7 @@ const HomeScreen = () => {
                   <Text style={styles.modalButtonText}>Donation Request</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+           
           </View>
         </View>
       </Modal>
@@ -221,13 +230,13 @@ const Card = ({ title, icon ,category}) => {
     <TouchableOpacity
       onPress={() => {
         
-          if(category===1 || category ===2)
+          if(category===1 || category ===4)
             {
               navigation.navigate("requestList");
             }
             else
             {
-              navigation.navigate("Map",{data:null,singleItem: false});
+              navigation.navigate("Map",{data:null,singleItem: false,category:category});
             }
 
 
@@ -334,6 +343,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
+
     justifyContent: "flex-end",
     backgroundColor: colors.primaryOpacity,
   },
@@ -343,11 +353,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 24,
+    display:'flex',
+    flexDirection:'column'
   },
   modalHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    
     alignItems: "center",
+    justifyContent:'space-between',
     marginBottom: 16,
   },
   modalHeaderText: {

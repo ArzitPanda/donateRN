@@ -19,6 +19,7 @@ import SpeedDialScreen from '../Screens/SpeedDialScreen';
 import SplashScreen from '../Screens/SplashScreen';
 import { Store } from '../Hooks/RouteDataProvider';
 import MapScreen from '../Screens/HomeScreen/MapScreen';
+import TermsScreen from '../Screens/TermsScreen';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Map" component={MapScreen}/>
         <Stack.Screen name="ArticleWebView" component={ArticleWebView} options={{ headerShown: false }} />
         <Stack.Screen name="SpeedDial" component={SpeedDialScreen}/>
+        <Stack.Screen name="Terms" component={TermsScreen}/>
         <Stack.Group screenOptions={{ presentation: 'modal' ,}}>
           <Stack.Screen name='DonateOptionModal' component={DonationModel} 
           

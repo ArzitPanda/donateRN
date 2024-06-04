@@ -27,6 +27,7 @@ export default function FirstSigupDetails({ route }) {
   const navigate = useNavigation();
   const [selectedActivities, setSelectedActivities] = useState([]);
   const handleSave = async () => {
+    
     const path = `public/${createUser.AuthId}`;
     const { data, error } = await supabase
       .storage
